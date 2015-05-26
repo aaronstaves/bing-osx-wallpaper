@@ -77,7 +77,7 @@ LATEST="$IMAGE_DIR/$LATEST_FILE"
 if [ $VERBOSE == 1 ]; then echo "Latest wallpaper: $LATEST"; fi
 
 # Get current desktop image
-CURRENT=`sqlite3 ~/Library/Application\ Support/Dock/desktoppicture.db "select value from data limit 1" | cat`
+CURRENT=`sqlite3 ~/Library/Application\ Support/Dock/desktoppicture.db "select value from data WHERE value !='$LATEST' limit 1" | cat`
 if [ $VERBOSE == 1 ]; then echo "Current wallpaper: $CURRENT"; fi
 
 # Figure out last update date
