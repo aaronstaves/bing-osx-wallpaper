@@ -11,10 +11,10 @@ crontab -e
 ```
 
 ### Add a crontab entry
-Add something similar to what's below to your crontab.  Obviously change the first command to where you've downloaded the code and the second variable to where your bing wallpapers will be stored
+Add something similar to what's below to your crontab.  Obviously change the first command to where you've downloaded the code and the second variable to where your bing wallpapers will be stored.  The third variable is where your desktop db is stored.  Be sure to use *absolute paths* for everything.
 ```
 # Download bing backgrounds, check every 5 minutes
-*/5 * * * * /Users/YOURUSER/src/bing-osx-wallpaper/update_wallpaper.sh -d /Users/YOURUSER/Pictures/bing-wallpapers > /dev/null 2>&1
+*/5 * * * * /Users/YOURUSER/src/bing-osx-wallpaper/update_wallpaper.sh -d /Users/YOURUSER/Pictures/bing-wallpapers -b /Users/YOURUSER/Library/Application\ Support/Dock/desktoppicture.db > /dev/null 2>&1
 ```
 
 # Troubleshooting
