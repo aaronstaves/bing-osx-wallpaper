@@ -1,11 +1,13 @@
 #!/bin/bash
 
 # Parse opts
-while getopts ":d:v:" opt; do
+while getopts ":d:v:b:" opt; do
   case $opt in
     d) IMAGE_DIR="$OPTARG"
     ;;
     v) VERBOSE="$OPTARG"
+    ;;
+    b) DATABASE_FILE="$OPTARG"
     ;;
     \?) echo "Invalid option -$OPTARG" >&2
     ;;
@@ -22,7 +24,14 @@ fi
 # Need an image dir
 if [ -z $IMAGE_DIR ]; then
 	echo ""
-	echo "-d(irectory) required to read latest image from"
+	echo "-(d)irectory required to read latest image from"
+	echo ""
+	exit
+fi
+
+if [ -z "$DATABASE_FILE" ]; then
+	echo ""
+	echo "-data(b)ase) required to set desktop image"
 	echo ""
 	exit
 fi
@@ -42,7 +51,7 @@ get_image ()
 	mkdir -p $IMAGE_DIR
 
 	base_url="http://bing.com"
-	base_image_url=`curl -s "http://www.bing.com/HPImageArchive.aspx?format=xml&idx=0&n=1&mkt=en-US" |grep "url" | sed 's/^.*<urlBase>//' | sed 's/<\/urlBase>.*$//'`
+	base_image_url=`/usr/bin/curl -s "http://www.bing.com/HPImageArchive.aspx?format=xml&idx=0&n=1&mkt=en-US" |grep "url" | sed 's/^.*<urlBase>//' | sed 's/<\/urlBase>.*$//'`
 	ext="_1920x1080.jpg"
 
 	if [ $VERBOSE == 1 ]; then echo "Downloading $base_url$base_image_url$ext"; fi
@@ -52,8 +61,7 @@ get_image ()
 	LATEST="$IMAGE_DIR/$LATEST_FILE"
 
 	# Get and touch to change modify date
-	wget -q -O $LATEST "$base_url$base_image_url$ext"
-	touch $LATEST
+	/usr/local/bin/wget -q -O $LATEST "$base_url$base_image_url$ext"; sleep 15; touch $LATEST;
 
 	if [ $VERBOSE == 1 ]; then echo "Created $LATEST"; fi
 }
@@ -86,5 +94,5 @@ fi
 # If we have a new file in the directory OR the date changed, update
 if [ "$LATEST" != "$CURRENT" ] || [ "$LAST_UPDATE" != "$TODAY" ]; then
 	if [ $VERBOSE == 1 ]; then echo "Newer image found, updating..."; fi
-	`sqlite3 ~/Library/Application\ Support/Dock/desktoppicture.db "update data set value = '$LATEST'" && killall Dock`
+	`/usr/bin/sqlite3 "$DATABASE_FILE" "update data set value = '$LATEST'" && killall Dock`
 fi
