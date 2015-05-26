@@ -91,8 +91,15 @@ if [ "$LAST_UPDATE" != "$TODAY" ]; then
 	get_image
 fi
 
+# If current is blank, nothing to update
 # If we have a new file in the directory OR the date changed, update
-if [ "$LATEST" != "$CURRENT" ] || [ "$LAST_UPDATE" != "$TODAY" ]; then
+if [ "$CURRENT" != "" ] && [ "$LATEST" != "$CURRENT" ] || [ "$LAST_UPDATE" != "$TODAY" ]; then
+	if [ $VERBOSE == 1 ] && [ "$LATEST" != "$CURRENT" ]; then
+		echo "Latest != Current - $LATEST != $CURRENT"
+	fi
+	if [ $VERBOSE == 1 ] && [ "$LAST_UPDATE" != "$TODAY" ]; then
+		echo "Last update != Today - $LAST_UPDATE != $TODAY"
+	fi
 	if [ $VERBOSE == 1 ]; then echo "Newer image found, updating..."; fi
 	`/usr/bin/sqlite3 "$DATABASE_FILE" "update data set value = '$LATEST'" && killall Dock`
 fi
